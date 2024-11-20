@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState } from 'react';
 import {
   FlatList,
@@ -14,28 +15,22 @@ interface ImagemGato{
 }
 
 export default function App() {
-  const [listaDeGatos, setListaDeGatos] = useState<ImagemGato[]>([
-    {
-      "id": "g6SI_ZZRh",
-      "url": "https://cdn2.thecatapi.com/images/g6SI_ZZRh.jpg"
-    },
-    {
-      "id": "19l",
-      "url": "https://cdn2.thecatapi.com/images/19l.gif"
-    },
-    {
-      "id": "d59",
-      "url": "https://cdn2.thecatapi.com/images/d59.jpg"
-    },
-    {
-      "id": "4bd",
-      "url": "https://cdn2.thecatapi.com/images/4bd.gif"
-    }
-  ])
+  const [listaDeGatos, setListaDeGatos] = useState<ImagemGato[]>([])
+
+  const buscarGatos = async () => {
+    const { data } = await axios.get("https://api.thecatapi.com/v1/images/search?limit=10")
+    const novaListaDeGatos: ImagemGato[] = [...data].splice(5, 5).map(gato => {
+      return { 
+        id: gato.id, 
+        url: gato.url 
+      }
+    })
+    setListaDeGatos(novaListaDeGatos)
+  }
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.botao}>
+      <Pressable style={styles.botao} onPress={() => buscarGatos()}>
         <Text style={styles.textoBotao}>Buscar Gatos</Text>
       </Pressable>
       <FlatList
