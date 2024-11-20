@@ -1,11 +1,13 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import axios from 'axios'
+import cors from 'cors'
 
 dotenv.config()
 const porta = process.env.PORT
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 interface ImagemGato{
@@ -22,10 +24,10 @@ app.get('/api/gatos', async (req, res) => {
                 url: gato.url 
             }
         })
-        res.json(listaDeGatos)
+        res.status(200).json(listaDeGatos)
     }
     catch(e){
-        res.json({mensagem: 'Erro ao obter as imagens'})
+        res.status(400).json({mensagem: 'Erro ao obter as imagens'})
     }
 })
 

@@ -16,16 +16,17 @@ interface ImagemGato{
 
 export default function App() {
   const [listaDeGatos, setListaDeGatos] = useState<ImagemGato[]>([])
+  const [erro, setErro] = useState<boolean>(false)
 
   const buscarGatos = async () => {
-    const { data } = await axios.get("https://api.thecatapi.com/v1/images/search?limit=10")
-    const novaListaDeGatos: ImagemGato[] = [...data].splice(5, 5).map(gato => {
-      return { 
-        id: gato.id, 
-        url: gato.url 
-      }
-    })
-    setListaDeGatos(novaListaDeGatos)
+    try{
+      setErro(false)
+      const { data } = await axios.get("http://localhost:3000/api/gatos")
+      setListaDeGatos(data)
+    }
+    catch(e){
+      setErro(true)
+    }
   }
 
   return (
@@ -33,20 +34,25 @@ export default function App() {
       <Pressable style={styles.botao} onPress={() => buscarGatos()}>
         <Text style={styles.textoBotao}>Buscar Gatos</Text>
       </Pressable>
-      <FlatList
-        data={listaDeGatos}
-        renderItem={({item}) => (
-          <View style={styles.itemLista}>
-            <Image 
-              source={{uri: item.url}}
-              resizeMode='center'
-              style={styles.imagemItem}
-            />
-          </View>
-        )}
-        keyExtractor={item => item.id}
-        style={styles.lista}
-      />
+      {
+        erro ?
+          <Text>Erro</Text>
+        :
+          <FlatList
+            data={listaDeGatos}
+            renderItem={({item}) => (
+              <View style={styles.itemLista}>
+                <Image 
+                  source={{uri: item.url}}
+                  resizeMode='center'
+                  style={styles.imagemItem}
+                />
+              </View>
+            )}
+            keyExtractor={item => item.id}
+            style={styles.lista}
+          />
+      }
     </View>
   );
 }
